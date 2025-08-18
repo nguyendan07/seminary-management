@@ -152,3 +152,5 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     }
 }
+
+AUTH_USER_MODEL = 'accounts.User'
