@@ -108,7 +108,7 @@ seminary_management/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/seminary-management.git
+   git clone https://github.com/nguyendan07/seminary-management.git
    cd seminary-management
    ```
 
@@ -199,8 +199,13 @@ python manage.py migrate
 
 ### Creating Sample Data
 ```bash
-python manage.py loaddata fixtures/sample_data.json
+python manage.py loaddata dev_data.json
 ```
+
+After loading the sample data, you can log in to the admin page with:
+- Username: admin
+- Email: admin@local.com
+- Password: 3ZbfEy-&JG23
 
 ---
 
@@ -224,8 +229,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support and questions:
 - 📧 Email: support@seminary-management.com
-- 📖 Documentation: [Wiki](https://github.com/yourusername/seminary-management/wiki)
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/seminary-management/issues)
+- 📖 Documentation: [Wiki](https://github.com/nguyendan07/seminary-management/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/nguyendan07/seminary-management/issues)
 
 ---
 

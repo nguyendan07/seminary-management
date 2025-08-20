@@ -49,8 +49,8 @@ class Student(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        verbose_name = 'Student'
-        verbose_name_plural = 'Students'
+        verbose_name = 'Chủng sinh'
+        verbose_name_plural = 'Chủng sinh'
 
     def __str__(self):
         return f"{self.student_id} - {self.user.get_full_name()}"
