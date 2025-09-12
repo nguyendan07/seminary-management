@@ -1,6 +1,54 @@
 from django.contrib import admin
+from django import forms
+from django.contrib.auth import get_user_model
 
 from .models import Student, StudentNote
+
+User = get_user_model()
+
+
+class StudentCreationForm(forms.ModelForm):
+    # User fields
+    username = forms.CharField(max_length=150, label="Mã chủng sinh")
+    first_name = forms.CharField(max_length=150, label="Tên")
+    last_name = forms.CharField(max_length=150, label="Họ")
+    email = forms.EmailField(label="Email")
+    password = forms.CharField(widget=forms.PasswordInput, label="Mật khẩu")
+    avatar = forms.ImageField(required=False, label="Ảnh đại diện")
+
+    class Meta:
+        model = Student
+        fields = [
+            "entry_year",
+            "current_year",
+            "status",
+            "hometown",
+            "baptism_name",
+            "baptism_date",
+            "confirmation_date",
+            "parish",
+            "community",
+        ]
+
+    def save(self, commit=True):
+        user = User.objects.create_user(
+            username=self.cleaned_data["username"],
+            first_name=self.cleaned_data["first_name"],
+            last_name=self.cleaned_data["last_name"],
+            email=self.cleaned_data["email"],
+            password=self.cleaned_data["password"],
+            user_type="student",
+        )
+        # Set avatar if provided
+        if self.cleaned_data.get("avatar"):
+            user.avatar = self.cleaned_data["avatar"]
+            user.save()
+        
+        student = super().save(commit=False)
+        student.user = user
+        if commit:
+            student.save()
+        return student
 
 
 class StudentNoteInline(admin.TabularInline):
@@ -18,7 +66,7 @@ class StudentNoteInline(admin.TabularInline):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = (
-        "student_id",
+        "get_student_id",
         "get_full_name",
         "current_year",
         "status",
@@ -33,27 +81,48 @@ class StudentAdmin(admin.ModelAdmin):
         "user__email",
         "hometown",
     )
-    ordering = ("student_id",)
+    ordering = ("user__username",)
 
     inlines = [StudentNoteInline]
 
     fieldsets = (
         (
-            "Thông tin cơ bản",
-            {"fields": ("user", "student_id", "entry_year", "current_year", "status")},
+            "Thông tin người dùng",
+            {"fields": ("user", "hometown")},
         ),
         (
-            "Thông tin cá nhân",
-            {"fields": ("hometown", "family_situation", "previous_education")},
+            "Thông tin cơ bản",
+            {"fields": ("entry_year", "current_year", "status")},
         ),
         (
             "Thông tin tâm linh",
-            {"fields": ("baptism_date", "confirmation_date", "parish", "community")},
+            {"fields": ("baptism_name", "baptism_date", "confirmation_date", "parish", "community")},
         ),
-        ("Thông tin rửa tội", {"fields": ("baptism_parish", "baptism_priest")}),
     )
 
     readonly_fields = ("created_at", "updated_at")
+
+    def get_fieldsets(self, request, obj=None):
+        if obj is None:  # Adding new student
+            return (
+                (
+                    "Thông tin người dùng",
+                    {"fields": ("username", "first_name", "last_name", "email", "password", "avatar", "hometown")},
+                ),
+                (
+                    "Thông tin cơ bản",
+                    {"fields": ("entry_year", "current_year", "status")},
+                ),
+                (
+                    "Thông tin tâm linh",
+                    {"fields": ("baptism_name", "baptism_date", "confirmation_date", "parish", "community")},
+                ),
+            )
+        return self.fieldsets  # Editing existing student
+
+    @admin.display(description="Mã chủng sinh")
+    def get_student_id(self, obj):
+        return obj.user.username
 
     @admin.display(description="Họ tên")
     def get_full_name(self, obj):
@@ -63,6 +132,11 @@ class StudentAdmin(admin.ModelAdmin):
         if obj:  # editing an existing object
             return self.readonly_fields + ("created_at", "updated_at")
         return self.readonly_fields
+    
+    def get_form(self, request, obj=None, **kwargs):
+        if obj is None:
+            kwargs["form"] = StudentCreationForm
+        return super().get_form(request, obj, **kwargs)
 
 
 @admin.register(StudentNote)

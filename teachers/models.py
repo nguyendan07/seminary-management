@@ -14,7 +14,6 @@ class Teacher(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='teacher_profile')
-    teacher_id = models.CharField(max_length=20, unique=True, verbose_name='Teacher ID')
     hire_date = models.DateField(verbose_name='Hire Date')
     position = models.CharField(max_length=50, choices=POSITION_CHOICES, verbose_name='Position')
 
@@ -37,3 +36,4 @@ class Teacher(models.Model):
 
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.get_position_display()})"
+ 

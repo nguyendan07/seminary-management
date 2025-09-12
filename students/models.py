@@ -24,26 +24,19 @@ class Student(models.Model):
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
-    student_id = models.CharField(max_length=20, unique=True, verbose_name='Student ID')
-    entry_year = models.IntegerField(verbose_name='Entry Year')
-    current_year = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Current Year')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name='Status')
+    entry_year = models.IntegerField(verbose_name='Năm nhập học')
+    current_year = models.IntegerField(choices=YEAR_CHOICES, verbose_name='Năm hiện tại')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='active', verbose_name='Trạng thái')
 
     # Personal Information
-    hometown = models.CharField(max_length=100, verbose_name='Hometown')
-    family_situation = models.TextField(blank=True, verbose_name='Family Situation')
-    previous_education = models.TextField(blank=True, verbose_name='Previous Education')
+    hometown = models.TextField(blank=True, verbose_name='Quê quán')
 
     # Spiritual Information
-    baptism_date = models.DateField(null=True, blank=True, verbose_name='Baptism Date')
-    confirmation_date = models.DateField(null=True, blank=True, verbose_name='Confirmation Date')
-    parish = models.ForeignKey(Parish, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Parish')
-    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Community')
-
-    # Baptism Information
-    baptism_parish = models.ForeignKey(Parish, on_delete=models.SET_NULL, null=True, blank=True,
-                                      related_name='baptized_students', verbose_name='Baptism Parish')
-    baptism_priest = models.CharField(max_length=100, blank=True, verbose_name='Baptism Priest')
+    baptism_name = models.CharField(max_length=100, blank=True, verbose_name='Tên thánh')
+    baptism_date = models.DateField(null=True, blank=True, verbose_name='Ngày Rửa Tội')
+    confirmation_date = models.DateField(null=True, blank=True, verbose_name='Ngày Thêm Sức')
+    parish = models.ForeignKey(Parish, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Giáo xứ')
+    community = models.ForeignKey(Community, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Giáo họ')
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -53,7 +46,7 @@ class Student(models.Model):
         verbose_name_plural = 'Chủng sinh'
 
     def __str__(self):
-        return f"{self.student_id} - {self.user.get_full_name()}"
+        return f"{self.user.username} - {self.user.get_full_name()}"
 
 
 class StudentNote(models.Model):
